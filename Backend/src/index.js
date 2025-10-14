@@ -1,7 +1,7 @@
-import app from "./app"
-import dbConnect from "./db/database.connection"
+import app from "./app.js"
+import dbConnect from "./db/database.connection.js"
 import dotenv from "dotenv"
-dotenv.config()
+dotenv.config({path:'../.env'})
 
 dbConnect()
 .then(()=> {
