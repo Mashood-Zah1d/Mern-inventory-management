@@ -81,7 +81,6 @@ function Signup() {
         }
     })}
     />
-
      <Input
     label= "Key"
     type = "password"
