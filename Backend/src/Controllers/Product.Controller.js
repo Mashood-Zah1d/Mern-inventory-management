@@ -6,10 +6,6 @@ import apiResponse from "../utils/apiResponse.js";
 
 export const addProduct = asyncFunction(async (req, res) => {
     const { sku, title, category, brand, price, variants } = req.body
-    const   parsedvariants= JSON.parse(variants)
-
-    console.log(variants);
-    
 
     if ([sku, title, category, brand].some((feild) => feild?.trim() === "")) {
         throw new apiError(400, "Please Provide Complete Information");
@@ -31,7 +27,7 @@ export const addProduct = asyncFunction(async (req, res) => {
     }
 
 
-    parsedvariants.forEach(async v => {
+    variants.forEach(async v => {
         v.barcode = Date.now() +Math.floor( (Math.random() * 1000));
         const result = await variant.create({ sku, color: v.color, size: v.size, barcode: v.barcode, stock: v.stock })
         if (!result) {
