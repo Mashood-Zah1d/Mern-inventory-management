@@ -97,6 +97,8 @@ function Signup() {
     <button type="Submit">
           Create Account
     </button>
+
+    <Link to={'/Signin'}><p className='text-blue-500'>Already have Account</p> </Link>
     </form>
     
     </div>
