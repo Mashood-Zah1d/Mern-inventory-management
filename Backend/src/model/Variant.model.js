@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const variantSchema = new mongoose.Schema({
     sku:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: "Product"
+        type:String,
+        required:true
     },
     color:{
         type:String,
@@ -25,6 +25,7 @@ const variantSchema = new mongoose.Schema({
     }
 },{timestamps:true})
 
+variantSchema.index({sku:1,color:1,size:1},{unique:true});
 const variant = mongoose.model("Variant",variantSchema);
 
 export default variant
