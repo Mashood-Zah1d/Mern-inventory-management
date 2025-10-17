@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Input from "../Input/Input.jsx";
 import AddVariants from "../AddVariants/AddVariants.jsx";
-
+import {useNavigate} from "react-router-dom";
 function AddProduct() {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const navigate = useNavigate();
   const [variants, setVariants] = useState([]);
   const [displayForm, setDisplayForm] = useState(false);
   const [response, setResponse] = useState("");
@@ -37,9 +38,11 @@ function AddProduct() {
         
         const result = await res.json();
         console.log(result);
-        
         setResponse(result.message);
-
+        setTimeout(()=>{
+        navigate('/barcode',{state:{product:result.data}})
+        },1000)
+        
     } catch (error) {
         setError(error.message)
     }

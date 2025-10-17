@@ -4,6 +4,7 @@ import './App.css'
 import AddProduct from './Component/AddProduct/AddProduct'
 import Signin from './Component/Signin/Signin'
 import Signup from './Component/Signup/Signup'
+import Barcodes from './Component/Barcodes/Barcodes'
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
       <Route path='/Signup' element = {<Signup/>}/>
       <Route path='/Signin' element = {<Signin/>}/>
       <Route path='/addProduct' element = {<AddProduct/>}/>
+      <Route path='/barcode' element = {<Barcodes/>}/>
     </Routes>
     </>
   )
