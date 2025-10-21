@@ -23,13 +23,16 @@ function Barcodes() {
         <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">
           Product: <span className="text-indigo-600">{product?.title}</span>
         </h2>
+        {console.log(product)}
 
         {product?.Variants?.map((variant, index) => (
+          
           <div 
             key={index} 
             className="flex justify-between items-center border-b py-4 last:border-none"
           >
             <div>
+              
               <h3 className="text-lg font-semibold text-gray-700 mb-1">Variant Details</h3>
               <p className="text-gray-600"><span className="font-medium">Color:</span> {variant.color}</p>
               <p className="text-gray-600"><span className="font-medium">Size:</span> {variant.size}</p>
