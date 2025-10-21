@@ -1,8 +1,8 @@
 import product from "../model/Product.model.js";
-import variant from "../model/Variant.model.js";
 import asyncFunction from "../utils/asyncFunction.js"
 import apiError from "../utils/apiError.js"
 import apiResponse from "../utils/apiResponse.js";
+import variant from "../model/Variant.model.js";
 
 export const addProduct = asyncFunction(async (req, res) => {
     const { sku, title, category, brand, price, variants } = req.body
@@ -26,19 +26,23 @@ export const addProduct = asyncFunction(async (req, res) => {
         throw new apiError(500, "Error Inserting The Data ");
     }
 
-
-    variants.forEach(async v => {
+    await Promise.all(
+    variants.map(async v => {
         v.barcode = Date.now() +Math.floor( (Math.random() * 1000));
         const result = await variant.create({ sku, color: v.color, size: v.size, barcode: v.barcode, stock: v.stock })
         if (!result) {
             throw new apiError(400, "Error Inserting Variant");
         }
-    });
+    }));
+
+    const v= await variant.find({});
+    console.log(v);
+    
 
     const data = await product.aggregate([
         {
             $match: {
-                sku
+                sku : sku
             }
         },
         {
@@ -50,15 +54,45 @@ export const addProduct = asyncFunction(async (req, res) => {
             }
         }
     ])
+    console.log(data[0]);
+    
 
     if (!data) {
         throw new apiError(400,"Product Not Found in Database")
     }
-    
-    console.log(data);
-    
-    
+
+
     res.status(200)
     .json(new apiResponse(200,"Product Added SuccesFully Inserted",data[0]));
 
+})
+
+export const getProduct = asyncFunction(async(req,res)=>{
+    const {barcode} = req.body;
+
+    if (!barcode) {
+        throw new apiError(400,"Need Barcode To Get Product");
+    }
+
+    const Data = await variant.aggregate([
+        {
+            $match:{barcode : Number(barcode)}
+        },
+        {
+            $lookup:{
+                from: "products",
+                localField: "sku",
+                foreignField:"sku",
+                as: "productDetails"
+            }
+        }
+    ])
+
+    if (Data.length === 0) {
+  throw new apiError(400, "Variant Does Not Exist");
+}
+
+
+    res.status(200)
+    .json(new apiResponse(200,"Product Founded",Data))
 })
