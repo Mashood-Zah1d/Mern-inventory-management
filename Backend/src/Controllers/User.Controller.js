@@ -78,3 +78,27 @@ export const signin = asyncFunction(async (req,res)=>{
     .json(new apiResponse(200,"Login Succesfull",{accessToken,refreshToken,loginAdmin}))
 
 })
+
+export const logout = asyncFunction(async(req,res)=>{
+    
+    const admin = await Admin.findByIdAndUpdate(req.user._id,
+        {
+            $set:{
+                refreshToken: undefined
+            }
+        },
+        {
+            new:true
+        }
+    )
+
+    const options = {
+        httpOnly:true,
+        secure:true
+    }
+
+    res.status(200)
+    .clearCookie("refreshToken",options)
+    .clearCookie("accessToken",options)
+    .json(new apiResponse(200,"User Logged Out",{}))
+})
