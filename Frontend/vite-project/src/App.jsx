@@ -7,6 +7,7 @@ import Barcodes from './Component/Barcodes/Barcodes'
 import Header from './Component/Header/Header'
 import Layout from './Component/Layout/Layout'
 import AddProductPage from './Pages/AddProductPage/AddProductPage'
+import Home from './Component/Home/Home'
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
   return (
     <>
     <Routes>
+      <Route path='/' element={<Home/>}/>
       <Route path= "/" element={<Layout/>}>
       <Route path='/header' element = {<Header/>}/>
       <Route path='/signup' element = {<Signup/>}/>
