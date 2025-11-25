@@ -41,19 +41,19 @@ adminSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 adminSchema.methods.AccessToken = async function () {
-  jwt.sign(
+ return jwt.sign(
     {id : this._id,
      username: this.username,
      email : this.email
     },
     process.env.ACCESS_TOKEN_SECRET_KEY,
     {
-      expiresIn:process.env.ACCESS_TOKEN_SECRET_KEY
+      expiresIn:process.env.ACCESS_TOKEN_EXPIRE_IN
     }
   )
 }
 adminSchema.methods.RefreshToken = async function () {
-  jwt.sign(
+  return jwt.sign(
     {id : this._id,},
     process.env.REFRESH_TOKEN_SECRET_KEY,
     {

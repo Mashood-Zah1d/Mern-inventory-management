@@ -96,3 +96,23 @@ export const getProduct = asyncFunction(async(req,res)=>{
     res.status(200)
     .json(new apiResponse(200,"Product Founded",Data))
 })
+
+export const getAllProduct = asyncFunction(async(req,res)=>{
+   const data = await product.aggregate(
+    [
+        {
+        $lookup:{
+        from: "variants",
+        localField: "sku",
+        foreignField:"sku",
+        as: "variants"
+        }}
+    ]
+   );
+   if (!data) {
+    throw new apiError(400,"No Product Found");
+   }
+
+   res.status(200)
+   .json(new apiResponse(200,"All Products With Variant",data))
+})

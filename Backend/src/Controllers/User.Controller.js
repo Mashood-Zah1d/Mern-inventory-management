@@ -8,13 +8,14 @@ const generateTokens = async (userid) =>{
     const admin = await Admin.findById(userid)
     const refreshToken = await admin.RefreshToken();
     const accessToken = await admin.AccessToken();
- 
+    console.log(accessToken);
+    
     admin.refreshToken = refreshToken;
     admin.save({validateBeforeSave:false})
  
     return {refreshToken,accessToken} 
    } catch (error) {
-    throw new Error("Issue Generating Tokens");
+    throw new Error("Issue Generating Tokens"+error);
    }
 }
 export const register = asyncFunction(async (req,res)=>{
@@ -70,11 +71,16 @@ export const signin = asyncFunction(async (req,res)=>{
     }
     
     const loginAdmin = await Admin.findById(admin._id).select("-password -refreshToken")
-    const {refreshToken,accessToken} = generateTokens(admin._id);
+    const {refreshToken,accessToken} = await generateTokens(admin._id);
 
+    const options= {
+     httpOnly:true,
+     secure:true
+    }
+    
     res.status(200)
-    .cookie("accessToken",accessToken)
-    .cookie("refreshToken",refreshToken)
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken",refreshToken,options)
     .json(new apiResponse(200,"Login Succesfull",{accessToken,refreshToken,loginAdmin}))
 
 })
