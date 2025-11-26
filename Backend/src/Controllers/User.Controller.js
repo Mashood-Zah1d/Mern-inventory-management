@@ -8,7 +8,6 @@ const generateTokens = async (userid) =>{
     const admin = await Admin.findById(userid)
     const refreshToken = await admin.RefreshToken();
     const accessToken = await admin.AccessToken();
-    console.log(accessToken);
     
     admin.refreshToken = refreshToken;
     admin.save({validateBeforeSave:false})
@@ -28,7 +27,6 @@ export const register = asyncFunction(async (req,res)=>{
     let admin = await Admin.findOne({
         $or:[{username},{email}]
     })
-    console.log(admin);
     
     if (admin) {
         throw new apiError(400,"User Already Exist");
@@ -59,7 +57,6 @@ export const signin = asyncFunction(async (req,res)=>{
         $or:[{email},{username}]
     })
     
-    console.log(admin);
     
     if(!admin){
      throw new apiError(400,"No Such Admin Exist");

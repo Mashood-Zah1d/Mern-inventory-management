@@ -3,6 +3,7 @@ import asyncFunction from "../utils/asyncFunction.js"
 import apiError from "../utils/apiError.js"
 import apiResponse from "../utils/apiResponse.js";
 import variant from "../model/Variant.model.js";
+import { cache } from "../Config/redis.js";
 
 export const addProduct = asyncFunction(async (req, res) => {
     const { sku, title, category, brand, price, variants } = req.body
@@ -36,7 +37,6 @@ export const addProduct = asyncFunction(async (req, res) => {
     }));
 
     const v= await variant.find({});
-    console.log(v);
     
 
     const data = await product.aggregate([
@@ -54,13 +54,13 @@ export const addProduct = asyncFunction(async (req, res) => {
             }
         }
     ])
-    console.log(data[0]);
     
 
     if (!data) {
         throw new apiError(400,"Product Not Found in Database")
     }
-
+    
+    cache.set(`products:${sku}`,data[0],3600)
 
     res.status(200)
     .json(new apiResponse(200,"Product Added SuccesFully Inserted",data[0]));
@@ -69,6 +69,17 @@ export const addProduct = asyncFunction(async (req, res) => {
 
 export const getProduct = asyncFunction(async(req,res)=>{
     const {barcode} = req.body;
+
+    if (!barcode) {
+        throw new apiError(401,"Data Not Provided");
+    }
+
+    const cachedData = await cache.get(`product-barcode:${barcode}`);
+
+    if (cachedData) {
+    return res.status(200)
+    .json(new apiResponse(200,"Product Founded",cachedData))
+    }
 
     if (!barcode) {
         throw new apiError(400,"Need Barcode To Get Product");
@@ -92,12 +103,19 @@ export const getProduct = asyncFunction(async(req,res)=>{
   throw new apiError(400, "Variant Does Not Exist");
 }
 
+ await cache.set(`product-barcode:${barcode}`,Data,3600)
 
     res.status(200)
     .json(new apiResponse(200,"Product Founded",Data))
 })
 
 export const getAllProduct = asyncFunction(async(req,res)=>{
+   const cachedData = await cache.get(`product-all`);
+   
+   if (cachedData) {
+    return res.status(200)
+   .json(new apiResponse(200,"All Products With Variant",cachedData))
+   }
    const data = await product.aggregate(
     [
         {
@@ -112,7 +130,8 @@ export const getAllProduct = asyncFunction(async(req,res)=>{
    if (!data) {
     throw new apiError(400,"No Product Found");
    }
-
+    
+   await cache.set(`product-all`,data,3600);
    res.status(200)
    .json(new apiResponse(200,"All Products With Variant",data))
 })
