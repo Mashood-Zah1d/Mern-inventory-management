@@ -34,7 +34,18 @@ export const cache = {
           return;
          }
       } catch (error) {
-        console.log("Error Setting Value In Redis"+error);
+        console.log("Error Deleting Value In Redis"+error);
+      }
+    },
+    async del (key) {
+      try {
+        const result = await client.del(key);
+           if (!result) {
+            console.log("Error Deleting Values In Redis ");
+            return;
+           }
+      } catch (error) {
+        console.log("Error Deleting Value In Redis"+error);
       }
     }
 }

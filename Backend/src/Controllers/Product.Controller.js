@@ -4,6 +4,7 @@ import apiError from "../utils/apiError.js"
 import apiResponse from "../utils/apiResponse.js";
 import variant from "../model/Variant.model.js";
 import { cache } from "../Config/redis.js";
+import { removeEmptyField } from "../utils/removeEmptyFeilds.js";
 
 export const addProduct = asyncFunction(async (req, res) => {
     const { sku, title, category, brand, price, variants } = req.body
@@ -135,3 +136,26 @@ export const getAllProduct = asyncFunction(async(req,res)=>{
    res.status(200)
    .json(new apiResponse(200,"All Products With Variant",data))
 })
+
+export const editProduct = asyncFunction(async(req,res)=>{
+   const {sku} = req.body;
+   if(!sku){
+    throw new apiError(401,"Sku Is Required To Update Product");
+   }
+   
+   const data = removeEmptyField(req.body);
+
+   const updatedData = await product.findOneAndUpdate(
+    {sku},
+    {$set: {...data} },
+    {new:true}
+   )
+   if (!updatedData) {
+    throw new apiError(400,"Issues Updating Data");
+   }
+   cache.del(`product-all`);
+
+   res.status(200)
+   .json(new apiResponse(200,"Data Updated SuccessFully",updatedData))
+})
+
